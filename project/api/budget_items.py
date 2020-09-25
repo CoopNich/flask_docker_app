@@ -1,5 +1,6 @@
+from sqlalchemy import exc
 from flask import Blueprint, request
-from flask_restx import Resource, Api
+from flask_restx import Resource, Api, fields
 
 from project import db
 from project.api.models import BudgetItem
@@ -8,8 +9,17 @@ from project.api.models import BudgetItem
 budget_items_blueprint = Blueprint('budget_items', __name__)
 api = Api(budget_items_blueprint)
 
+budget_item = api.model('BudgetItem', {
+    'id': fields.Integer(readOnly=True),
+    'name': fields.String(required=True),
+    'cost': fields.String(required=True),
+    'created_date': fields.DateTime,
+})
+
 
 class BudgetItemsList(Resource):
+
+    @api.expect(budget_item, validate=True)
     def post(self):
         post_data = request.get_json()
         name = post_data.get('name')
