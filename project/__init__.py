@@ -3,38 +3,29 @@ from flask import Flask, jsonify
 from flask_restx import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 
-
-# instantiate the app
-app = Flask(__name__)
-
-api = Api(app)
-
-# set config
-app_settings = os.getenv('APP_SETTINGS')
-app.config.from_object(app_settings) 
-
 # instantiate the db
-db = SQLAlchemy(app)
+db = SQLAlchemy()
 
 # model
-class BudgetItem(db.Model):
-    __tablename__ = 'budget_items'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(128), nullable=False)
-    cost = db.Column(db.String(128), nullable=False)
-    paid = db.Column(db.Boolean(), default=False, nullable=False)
+def create_app(script_info=None):
 
-    def __init__(self, name, cost):
-        self.name = name
-        self.cost = cost
+    # instantiate the app
+    app = Flask(__name__)
 
+    # set config
+    app_settings = os.getenv('APP_SETTINGS')
+    app.config.from_object(app_settings)
 
-class Ping(Resource):
-    def get(self):
-        return {
-            'status': 'success',
-            'message': 'pong!'
-        }
+    # set up extensions
+    db.init_app(app)
 
+    # register blueprints
+    from project.api.ping import ping_blueprint
+    app.register_blueprint(ping_blueprint)
 
-api.add_resource(Ping, '/ping')
+    # shell context for flask cli
+    @app.shell_context_processor
+    def ctx():
+        return {'app': app, 'db': db}
+
+    return app
