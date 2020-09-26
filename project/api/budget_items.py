@@ -17,7 +17,23 @@ budget_item = api.model('BudgetItem', {
 })
 
 
+class BudgetItems(Resource):
+    @api.marshal_with(budget_item)
+    def get(self, budget_item_id):
+        user = BudgetItem.query.filter_by(id=budget_item_id).first()
+        if not user:
+            api.abort(404, f"Item {budget_item_id} does not exist")
+        return user, 200   
+
+
 class BudgetItemsList(Resource):
+    @api.marshal_with(budget_item)
+    def get(self, budget_item_id):
+        return BudgetItem.query.filter_by(id=budget_item_id).first(), 200
+
+    @api.marshal_with(budget_item, as_list=True)
+    def get(self):
+        return BudgetItem.query.all(), 200
 
     @api.expect(budget_item, validate=True)
     def post(self):
@@ -39,3 +55,4 @@ class BudgetItemsList(Resource):
 
 
 api.add_resource(BudgetItemsList, '/budget_items')
+api.add_resource(BudgetItems, '/budget_items/<int:budget_item_id>')

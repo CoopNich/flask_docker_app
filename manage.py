@@ -17,6 +17,12 @@ def recreate_db():
     db.create_all()
     db.session.commit()
 
+@cli.command('seed_db')
+def seed_db():
+    db.session.add(BudgetItem(name='rent', cost="1200.00"))
+    db.session.add(BudgetItem(name='car payment', cost='250.00'))
+    db.session.commit()
+
 
 if __name__ == '__main__':
     cli()
