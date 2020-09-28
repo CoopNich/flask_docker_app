@@ -20,10 +20,36 @@ budget_item = api.model('BudgetItem', {
 class BudgetItems(Resource):
     @api.marshal_with(budget_item)
     def get(self, budget_item_id):
-        user = BudgetItem.query.filter_by(id=budget_item_id).first()
-        if not user:
+        budget_item = BudgetItem.query.filter_by(id=budget_item_id).first()
+        if not budget_item:
             api.abort(404, f"Item {budget_item_id} does not exist")
-        return user, 200   
+        return budget_item, 200
+
+    @api.expect(budget_item, validate=True)
+    def put(self, budget_item_id):
+        post_data = request.get_json()
+        name = post_data.get("name")
+        cost = post_data.get("cost")
+        response_object = {}
+
+        budget_item = BudgetItem.query.filter_by(id=budget_item_id).first()
+        if not budget_item:
+            api.abort(404, f"Item {budget_item_id} does not exist")
+        budget_item.name = name
+        budget_item.cost = cost
+        db.session.commit()
+        response_object["message"] = f"{budget_item.id} was updated!"
+        return response_object, 200
+        
+    def delete(self, budget_item_id):
+        response_object = {}
+        budget_item = BudgetItem.query.filter_by(id=budget_item_id).first()
+        if not budget_item:
+            api.abort(404, f"Item {budget_item_id} does not exist")
+        db.session.delete(budget_item)
+        db.session.commit()
+        response_object["message"] = f"{budget_item.name} was removed!"
+        return response_object, 200  
 
 
 class BudgetItemsList(Resource):
