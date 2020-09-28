@@ -1,3 +1,7 @@
+import os
+
+from flask_admin.contrib.sqla import ModelView 
+
 from sqlalchemy.sql import func
 
 from project import db
@@ -15,4 +19,8 @@ class BudgetItem(db.Model):
 
     def __init__(self, name, cost):
         self.name = name
-        self.cost = cost 
+        self.cost = cost
+
+if os.getenv("FLASK_ENV") == "development":
+    from project import admin
+    admin.add_view(ModelView(BudgetItem, db.session))

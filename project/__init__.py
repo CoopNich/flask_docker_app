@@ -1,10 +1,12 @@
 import os
 from flask import Flask, jsonify
-from flask_restx import Resource, Api
+from flask_admin import Admin
 from flask_sqlalchemy import SQLAlchemy
 
 # instantiate the db
 db = SQLAlchemy()
+# instantiate admin
+admin = Admin(template_mode="bootstrap3")
 
 # model
 def create_app(script_info=None):
@@ -18,6 +20,8 @@ def create_app(script_info=None):
 
     # set up extensions
     db.init_app(app)
+    if os.getenv("FLASK_ENV") == "development":
+        admin.init_app(app)
 
     # register blueprints
     from project.api.ping import ping_blueprint

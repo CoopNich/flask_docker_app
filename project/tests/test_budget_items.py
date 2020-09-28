@@ -137,11 +137,11 @@ def test_remove_budget_item_incorrect_id(test_app, test_database):
     assert "Item 999 does not exist" in data["message"]
 
 def test_update_budget_item(test_app, test_database, add_budget_item):
-    budget_item = add_budget_item("example", "9000")
+    budget_item = add_budget_item("example", "9000",)
     client = test_app.test_client()
     resp_one = client.put(
         f"/budget_items/{budget_item.id}",
-        data=json.dumps({"name": "new_example", "cost": "8000"}),
+        data=json.dumps({"name": "new_example", "cost": "8000", "paid": True}),
         content_type="application/json",
     )
     data = json.loads(resp_one.data.decode())
@@ -152,6 +152,7 @@ def test_update_budget_item(test_app, test_database, add_budget_item):
     assert resp_two.status_code == 200
     assert "new_example" in data["name"]
     assert "8000" in data["cost"]
+    assert True == data["paid"]
 
 
 def test_update_budget_item_invalid_json(test_app, test_database):
@@ -182,7 +183,7 @@ def test_update_budget_item_does_not_exist(test_app, test_database):
     client = test_app.test_client()
     resp = client.put(
         "/budget_items/999",
-        data=json.dumps({"name": "loan", "cost": "600.00"}),
+        data=json.dumps({"name": "loan", "cost": "600.00", "paid": True}),
         content_type="application/json",
     )
     data = json.loads(resp.data.decode())

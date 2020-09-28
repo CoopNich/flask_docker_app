@@ -13,6 +13,7 @@ budget_item = api.model('BudgetItem', {
     'id': fields.Integer(readOnly=True),
     'name': fields.String(required=True),
     'cost': fields.String(required=True),
+    'paid': fields.Boolean,
     'created_date': fields.DateTime,
 })
 
@@ -30,6 +31,7 @@ class BudgetItems(Resource):
         post_data = request.get_json()
         name = post_data.get("name")
         cost = post_data.get("cost")
+        paid = post_data.get("paid")
         response_object = {}
 
         budget_item = BudgetItem.query.filter_by(id=budget_item_id).first()
@@ -37,6 +39,7 @@ class BudgetItems(Resource):
             api.abort(404, f"Item {budget_item_id} does not exist")
         budget_item.name = name
         budget_item.cost = cost
+        budget_item.paid = paid
         db.session.commit()
         response_object["message"] = f"{budget_item.id} was updated!"
         return response_object, 200
