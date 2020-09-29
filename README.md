@@ -25,7 +25,7 @@ cd into the root folder of the project, then build your container and run it on 
     docker-compose up -d --build
 ```
 ### Flask Admin
-Once the container is spun up, you can visit http://localhost:5001/admin/budgetitem/ to interact with the Flask Admin GUI to interact with the database and use CRUD functionality. 
+Once the container is spun up, you can visit http://localhost:5001/admin/budgetitem/ and use the Flask Admin GUI to interact with the database and use CRUD functionality. 
 
 ### PyTest
 PyTest is also available for running tests on the project/tests/test_budget_item.py file
